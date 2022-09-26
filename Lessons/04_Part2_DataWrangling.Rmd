@@ -17,9 +17,10 @@ editor_options:
 
 ```{r, message = FALSE}
 getwd()
+#install.packages(plyr)
 #library(plyr)
-library(tidyverse)
-library(lubridate)
+#library(tidyverse)
+#library(lubridate)
 NTL.phys.data.PeterPaul <- read.csv("./Data/Processed/NTL-LTER_Lake_ChemistryPhysics_PeterPaul_Processed.csv")
 NTL.nutrient.data <- read.csv("./Data/Raw/NTL-LTER_Lake_Nutrients_Raw.csv",stringsAsFactors = TRUE)
 ```
