@@ -2,7 +2,7 @@
 title: "Assignment 5: Data Visualization"
 author: "Laura Martinez"
 output: pdf_document
-geometry: margin=2.54cm
+geometry: margin=2 cm
 editor_options: 
   chunk_output_type: console
 ---
@@ -12,8 +12,8 @@ editor_options:
 #For it to work, the "formatR" package needs to be installed
 
 #install.packages('formatR')
-#library(formatR)
-knitr::opts_chunk$set(tidy.opts=list(width.cutoff=50), tidy=TRUE)
+library(formatR)
+knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
 ```
 
 ## OVERVIEW
@@ -34,9 +34,13 @@ The completed exercise is due on Friday, Oct 14th @ 5:00pm.
 ## Set up your session 
 1. Set up your session. Verify your working directory and load the tidyverse, 
 lubridate, & cowplot packages. Upload the NTL-LTER processed data files for  
-nutrients and chemistry/physics for Peter and Paul Lakes (use the tidy 
-[`NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv`] version) and 
+nutrients and chemistry/physics for Peter and Paul Lakes (use the tidy
+
+[`NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv`] 
+
+version) and 
 the processed data file for the Niwot Ridge litter dataset (use the
+
 [`NEON_NIWO_Litter_mass_trap_Processed.csv`] version). 
 
 2. Make sure R is reading dates as date format; if not change the format to date.
@@ -50,8 +54,13 @@ library(lubridate)
 #install.packages("cowplot")
 library(cowplot)
 
-LTER_Nutrients <- read.csv("~/Documents/EDA-Fall2022/Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv", stringsAsFactors = TRUE)
-NIWO_MassTrap <- read.csv("~/Documents/EDA-Fall2022/Data/Processed/NEON_NIWO_Litter_mass_trap_Processed.csv", stringsAsFactors = TRUE)
+LTER_Nutrients <- 
+
+read.csv("~/Documents/EDA-Fall2022/Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv", stringsAsFactors = TRUE)
+
+NIWO_MassTrap <- 
+
+read.csv("~/Documents/EDA-Fall2022/Data/Processed/NEON_NIWO_Litter_mass_trap_Processed.csv",stringsAsFactors = TRUE)
 
 #2 
 LTER_Nutrients$sampledate <- as.Date(LTER_Nutrients$sampledate, format = "%Y-%m-%d")
@@ -66,7 +75,7 @@ NIWO_MassTrap$collectDate <- as.Date(NIWO_MassTrap$collectDate, format = "%Y-%m-
 
 Laurastheme <- theme_classic(base_size = 12) +
   theme(axis.text = element_text(color = "plum4"), 
-        legend.position = "right")
+        legend.position = "bottom")
 theme_set(Laurastheme)
 
 ```
@@ -123,13 +132,15 @@ TN.boxplot <-
   geom_boxplot(aes(color=lakename))
 print(TN.boxplot)
   
-plot_grid(Temp.boxplot, TP.boxplot, TN.boxplot, nrow = 1, align = 'h', rel_widths = c(2.5, 2.5, 4))
+plot_grid(Temp.boxplot, TP.boxplot, TN.boxplot, ncol = 1, align = 'h', 
+          
+rel_heights = c(2.5, 2.5, 4))
 ```
 
 Question: What do you observe about the variables of interest over seasons 
 and between lakes? 
 
-> Answer: Both lakes follow a normal distribution for mean temperature, whereas mean tp_ug shows a more consistent trend across the months and seasons. Similarly, mean tn_ug follows a consistent pattern across months and seasons. One difference is that temperature does not show a lot of outlier data, where tp_ug and tn_ug have a lot of data skewing the IQR into a higher range. 
+> Answer: Both lakes follow a normal distribution for mean temperature, whereas mean tp_ug shows a more consistent trend across the months and seasons. Similarly, mean tn_ug follows a consistent pattern across months and seasons. One difference is that temperature does not show a lot of outlier data, where tp_ug and tn_ug have a lot of data skewing the IQR into a higher range. While the means are similar for Peter and Paul Lake, the tp_ug and tn_ug plots show that Paul Lake tends to have lower mean values across the year. 
 
 6. [Niwot Ridge] Plot a subset of the litter dataset by displaying only the 
 "Needles" functional group. Plot the dry mass of needle litter by date and 
