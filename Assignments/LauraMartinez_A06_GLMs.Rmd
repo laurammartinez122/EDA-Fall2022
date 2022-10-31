@@ -11,7 +11,7 @@ editor_options:
 
 #install.packages('formatR')
 library('formatR')
-knitr::opts_chunk$set(tidy.opts=list(width.cutoff=80), tidy=TRUE)
+knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
 
 ```
 
