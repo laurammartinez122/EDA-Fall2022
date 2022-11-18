@@ -37,6 +37,7 @@ library(tidyverse)
 library(rvest)
 #install.packages(lubridate)
 library(lubridate)
+library(ggplot2)
 
 #Set theme
 Laurastheme <- theme_classic(base_size = 12) +
@@ -75,13 +76,17 @@ In the code chunk below scrape these values, assigning them to four separate var
 
 ```{r scrape.the.data}
 #3
-water.system.name <- the_main_URL %>% html_nodes("div+ table tr:nth-child(1) td:nth-child(2)") %>% html_text()
+water.system.name <- the_main_URL %>% 
+  html_nodes("div+ table tr:nth-child(1) td:nth-child(2)") %>% html_text()
   
-pswid <- the_main_URL %>% html_nodes("td tr:nth-child(1) td:nth-child(5)") %>% html_text()
+pswid <- the_main_URL %>% 
+  html_nodes("td tr:nth-child(1) td:nth-child(5)") %>% html_text()
   
-ownership <- the_main_URL %>% html_nodes("div+ table tr:nth-child(2) td:nth-child(4)") %>% html_text()
+ownership <- the_main_URL %>% 
+  html_nodes("div+ table tr:nth-child(2) td:nth-child(4)") %>% html_text()
   
-max.withdrawals.mgd <- the_main_URL %>% html_nodes("th~ td+ td") %>% html_text()
+max.withdrawals.mgd <- the_main_URL %>% 
+  html_nodes("th~ td+ td") %>% html_text()
 
 ```
 
@@ -123,16 +128,19 @@ scrape.it <- function(the_pwsid, the_year){
                                   'pwsid=', the_pwsid, '&', 'year=', the_year))
   
   #Scrape the data items
-  water.system.name <- the_website %>% html_nodes("div+ table tr:nth-child(1) td:nth-child(2)") %>% html_text()
-  pswid <- the_website %>% html_nodes("td tr:nth-child(1) td:nth-child(5)") %>% html_text()
-  ownership <- the_website %>% html_nodes("div+ table tr:nth-child(2) td:nth-child(4)") %>% html_text()
-  max.withdrawals.mgd <- the_website %>% html_nodes("th~ td+ td") %>% html_text()
+  water.system.name <- the_scrape_url %>% 
+    html_nodes("div+ table tr:nth-child(1) td:nth-child(2)") %>% html_text()
+  the_pswid <- the_scrape_url %>% 
+    html_nodes("td tr:nth-child(1) td:nth-child(5)") %>% html_text()
+  ownership <- the_scrape_url %>% 
+    html_nodes("div+ table tr:nth-child(2) td:nth-child(4)") %>% html_text()
+  max.withdrawals.mgd <- the_scrape_url %>% html_nodes("th~ td+ td") %>% html_text()
   
   #Construct dataframe
   dataframe <- data.frame("Month" = c(1, 5, 9, 2, 6, 8, 3, 7, 11, 4, 8, 12),
                    "Year" = rep(the_year,12),
                    "Water System Name" = water.system.name,
-                   "PSWID" = pswid, 
+                   "PSWID" = the_pswid, 
                    "Ownership" = ownership, 
                    "Max_Withdrawals_mgd" = as.numeric(max.withdrawals.mgd)) %>%
     mutate(Date = my(paste(Month,"-",Year)))
@@ -160,11 +168,16 @@ max.plot_Dur2015
 #8
 df_Ash2015 <- scrape.it('01-11-010', 2015)
 
-max.plot_Ash2015 <- ggplot(data = df_Ash2015, aes(x = Date, y = Max_Withdrawals_mgd)) +
-  geom_line() +
+max.plot_2015 <- ggplot() +
+  geom_line(data = df_Dur2015, aes(x = Date, y = Max_Withdrawals_mgd), color = "blue" ) +
+  geom_line(data = df_Ash2015, aes(x = Date, y = Max_Withdrawals_mgd), color = "red" ) +
   xlab("Month") +
-  ylab("Maximum Daily Withdrawal")
-max.plot_Ash2015
+  ylab("Maximum Daily Withdrawal") +
+  labs(title = "Maximum Water Withdrawals: Durham, NC vs. Asheville, NC",
+       subtitle = "by: Laura Martinez") +
+  theme(plot.title=element_text(hjust=0.5),
+        plot.subtitle=element_text(hjust=0.5))
+max.plot_2015
 
 ```
 
@@ -175,9 +188,24 @@ max.plot_Ash2015
 
 ```{r fetch.and.plot.Asheville.multiyear.data}
 #9
-ndjsbfjbhdhjsf
+year_range <- seq(2010, 2019)
+
+Asheville_pswid <-  rep('01-11-010', length(year_range))
+
+Asheville_df <- map2(Asheville_pswid, year_range, scrape.it) %>% bind_rows()
+
+Asheville.plot <- ggplot(data = Asheville_df, aes(x = Date, y = Max_Withdrawals_mgd)) +
+  geom_line() +
+  xlab("Year") +
+  ylab("Maximum Daily Withdrawal") +
+  labs(title = "Maximum Water Withdrawals in Asheville, NC",
+       subtitle = "by: Laura Martinez") +
+  theme(plot.title=element_text(hjust=0.5),
+        plot.subtitle=element_text(hjust=0.5))
+Asheville.plot
 
 ```
 
 >Question: Just by looking at the plot (i.e. not running statistics), does Asheville have a trend in water usage over time?
-> 
+
+> Asheville's water consumption has a cyclical nature where there are observed fluctations in water usage that occur periodically. In general, the water levels seem to be consistent over the years. That is until the dramatic spike in late 2019/2020, which suggests that there may be something happening externally other than seasonal trends that could explain an uptick in water consuption in Asheville, NC during this time. 
